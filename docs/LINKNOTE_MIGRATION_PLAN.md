@@ -1,6 +1,6 @@
-# BiliNote Port Plan
+# LinkNote Migration Plan
 
-This document defines which BiliNote capabilities should be ported into LinkNote for the first usable release.
+This document records which legacy capabilities were selected and adapted into LinkNote for the first usable release.
 
 ## Keep In First Release
 
@@ -18,7 +18,7 @@ This document defines which BiliNote capabilities should be ported into LinkNote
 
 ## Replace With LinkNote-Specific Input Flow
 
-- original BiliNote URL form
+- original single-video URL form
   replaced by:
   - WeChat File Transfer Assistant collection
   - clipboard collection
@@ -39,7 +39,7 @@ This document defines which BiliNote capabilities should be ported into LinkNote
 
 ## Backend Migration Order
 
-1. Introduce BiliNote-compatible prompt format/style system into LinkNote analysis layer.
+1. Introduce a compatible prompt format/style system into the LinkNote analysis layer.
 2. Port Bilibili transcript/download orchestration into a dedicated `sources` and `analysis` split.
 3. Port note markdown generation and source-link post-processing.
 4. Port vector-store and chat tools for note-scoped AI Q&A.

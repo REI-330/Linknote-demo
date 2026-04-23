@@ -1,7 +1,7 @@
 import { ArrowLeft, ArrowUpRight, Settings2 } from "lucide-react";
 import type { ReactNode } from "react";
 
-import logo from "../../assets/bilinote-icon.svg";
+import logo from "../../assets/linknote-icon.svg";
 import "../HomePage/workspace.css";
 
 interface NoteDetailPageProps {

@@ -310,7 +310,7 @@ run_note_analysis
 - `artifacts/media.json`：视频元数据
 - `artifacts/transcript.json`：转录结果
 - `artifacts/analysis.md`：分析输出
-- `artifacts/{item_id}.json`：BiliNote 兼容 note_result 快照
+- `artifacts/{item_id}.json`：LinkNote 内部兼容的 `note_result` 快照
 
 关键代码：
 

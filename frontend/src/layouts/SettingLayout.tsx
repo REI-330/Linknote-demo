@@ -1,7 +1,7 @@
 import { SlidersHorizontal } from "lucide-react";
 import { ReactNode } from "react";
 
-import logo from "../assets/bilinote-icon.svg";
+import logo from "../assets/linknote-icon.svg";
 
 interface SettingLayoutProps {
   menu: ReactNode;

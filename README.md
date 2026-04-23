@@ -125,6 +125,7 @@ frontend/src/
 - `CONTRIBUTING.md`: branch, PR, and review workflow
 - `docs/CODE_GUIDE.md`: naming, comments, and module-boundary rules
 - `docs/ARCHITECTURE.md`: system overview
+- `docs/LINKNOTE_MIGRATION_PLAN.md`: historical migration notes and early-scope decisions
 - `docs/LINKNOTE_PROJECT_BOOK.md`: longer project book and implementation notes
 
 ## Common Commands
