@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Node / frontend build
+node_modules/
+frontend/node_modules/
+frontend/dist/
+dist/
+coverage/
+
+# Backend build and local smoke-test artifacts
+backend/*.egg-info/
+backend/.mypy_cache/
+backend/.ruff_cache/
+backend/.venv/
+backend/.tmp*/
+backend/tmp*/
+backend/static/screenshots/
+
+# LinkNote local runtime data. Do not commit user notes, inbox files,
+# downloaded media, vector stores, cookies, API keys, or personal paths.
+workspace/
+linknote.json
+cookies.txt
+backend/cookies.txt
+*.local.json
+.env
+.env.*
+!.env.example
+!backend/.env.example
+
+# Local browser/test profiles
+.tmp*/
+.tmp-*/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

@@ -1,0 +1,81 @@
+{
+  "paths": {
+    "workspace_dir": "workspace",
+    "inbox_dir": "workspace/inbox",
+    "reports_dir": "workspace/reports",
+    "runtime_dir": "workspace/runtime"
+  },
+  "wechat": {
+    "enabled": true,
+    "chatlog_root": "C:/path/to/chatlog",
+    "account_dir": "",
+    "session_allowlist": [
+      "filehelper",
+      "文件传输助手"
+    ],
+    "scan_days": 3,
+    "include_chatrooms": false,
+    "max_sessions": 20,
+    "max_messages_per_session": 80
+  },
+  "clipboard": {
+    "enabled": true,
+    "include_on_schedule": false
+  },
+  "bilibili": {
+    "cookies_file": "",
+    "use_browser_cookies": false
+  },
+  "schedule": {
+    "enabled": false,
+    "daily_time": "21:00",
+    "auto_collect_wechat": true,
+    "notify_on_complete": true
+  },
+  "retention": {
+    "days": 7,
+    "cleanup_intermediate": true
+  },
+  "notification": {
+    "enabled": true,
+    "open_target": "daily_report"
+  },
+  "server": {
+    "host": "127.0.0.1",
+    "port": 8765,
+    "open_browser": true,
+    "lan_enabled": true
+  },
+  "analysis": {
+    "note_format": "summary",
+    "note_style": "detailed",
+    "enable_source_links": true,
+    "enable_mind_map": true,
+    "enable_ai_chat": true,
+    "enable_screenshots": false,
+    "provider_id": "",
+    "model_name": ""
+  },
+  "transcriber": {
+    "type": "openai_compatible",
+    "provider_id": "openai",
+    "model_name": "whisper-1",
+    "language": "zh"
+  },
+  "providers": [
+    {
+      "provider_id": "openai",
+      "label": "OpenAI",
+      "logo": "openai",
+      "type": "builtin",
+      "base_url": "https://api.openai.com/v1",
+      "api_key": "",
+      "api_key_env": "OPENAI_API_KEY",
+      "default_model": "gpt-4.1-mini",
+      "models": [
+        "gpt-4.1-mini"
+      ],
+      "enabled": true
+    }
+  ]
+}

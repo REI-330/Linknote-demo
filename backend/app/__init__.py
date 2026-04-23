@@ -1,0 +1,2 @@
+"""LinkNote backend package."""
+
