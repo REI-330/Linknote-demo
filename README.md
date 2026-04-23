@@ -1,44 +1,44 @@
 # LinkNote
 
-LinkNote is a local-first note automation app. It collects Bilibili links from WeChat File Transfer Assistant, clipboard, or manual paste, then generates a daily report and a per-video note workspace with transcript reference, Markdown output, mind map, and AI Q&A.
+LinkNote 是一个本地优先的内容整理与笔记自动化项目。它可以从微信文件传输助手、剪贴板或手动输入中收集 Bilibili 链接，并生成日报与单条视频笔记工作台。
 
-The project is built for small-team collaboration:
+当前项目面向小团队协作开发，技术栈包括：
 
-- FastAPI backend
-- React + Vite frontend
-- local runtime workspace
-- Windows-friendly startup scripts
-- OpenAI-compatible model providers
-- Bilibili subtitle/audio extraction
+- FastAPI 后端
+- React + Vite 前端
+- 本地工作区持久化
+- Windows 启动脚本
+- OpenAI Compatible 模型接入
+- Bilibili 字幕 / 音频 / 视频处理
 
-## What It Does
+## 功能概览
 
-- Collect Bilibili links from:
-  - WeChat File Transfer Assistant
-  - clipboard
-  - manual input
-- Build a daily report page.
-- Generate per-video notes.
-- Keep multiple note versions after re-analysis.
-- Show source transcript references.
-- Generate Markmap mind maps from Markdown.
-- Ask questions against the current note and transcript.
-- Run scheduled daily collection locally.
+- 从以下来源采集 Bilibili 链接：
+  - 微信文件传输助手
+  - 剪贴板
+  - 手动输入
+- 生成当日日报页
+- 为单条视频生成结构化笔记
+- 支持失败后重试与多版本笔记
+- 展示原文转录与引用片段
+- 根据 Markdown 生成 Markmap 思维导图
+- 支持围绕当前笔记继续 AI 问答
+- 支持本地定时整理任务
 
-## Requirements
+## 运行要求
 
 - Windows 10/11
 - Python 3.12+
 - Node.js 20+
 - npm
-- ffmpeg recommended for audio/video processing
-- A model provider API key for analysis and transcription
+- 建议安装 `ffmpeg`
+- 至少配置一个可用的模型提供商 API Key
 
-Public Bilibili videos with platform subtitles may work without cookies. Restricted videos usually need `cookies.txt` or browser-cookie fallback.
+公开视频在平台自带字幕可用时，可能不需要 cookies；受限视频通常需要 `cookies.txt` 或浏览器 cookies fallback。
 
-## Quick Start
+## 快速开始
 
-Clone the repository, then run:
+克隆仓库后运行：
 
 ```powershell
 cd linknote
@@ -46,116 +46,116 @@ cd linknote
 .\scripts\start-app.cmd
 ```
 
-The packaged app opens from the FastAPI server:
+打包模式启动后，访问：
 
 ```text
 http://127.0.0.1:8765/
 ```
 
-For development mode with Vite hot reload:
+如果需要前端热更新开发模式，运行：
 
 ```powershell
 cd linknote
 .\scripts\start-dev.cmd
 ```
 
-Development frontend:
+开发前端地址：
 
 ```text
 http://127.0.0.1:3015/
 ```
 
-## First Run Setup
+## 首次配置
 
-Open `Settings` in the app and configure:
+进入应用的 `设置` 页面后，至少确认这些内容：
 
-- WeChat `chatlog` root if you want WeChat ingestion.
-- Model provider and model.
-- API key or API-key environment variable.
-- Optional Bilibili `cookies.txt` path.
-- Optional audio transcription provider/model.
+- 微信 `chatlog` 根目录
+- 分析用模型提供商与模型
+- API Key 或 API Key 对应的环境变量
+- 可选的 Bilibili `cookies.txt` 路径
+- 可选的音频转写方式与模型
 
-Runtime settings are saved under:
+运行时配置默认保存在：
 
 ```text
 workspace/runtime/linknote.json
 ```
 
-That file is ignored by Git because it can contain local paths and secrets.
+这个文件不会进入 Git，因为其中可能包含本机路径、密钥和个人运行配置。
 
-## Repository Layout
+## 仓库结构
 
 ```text
 linknote/
-  backend/                 FastAPI backend
-  frontend/                React + Vite frontend
-  scripts/                 Windows startup/bootstrap scripts
-  docs/                    Architecture and collaboration documentation
-  workspace/               Local runtime data, ignored by Git
-  linknote.example.json    Sanitized config example
+  backend/                 FastAPI 后端
+  frontend/                React + Vite 前端
+  scripts/                 Windows 启动与构建脚本
+  docs/                    架构与协作文档
+  workspace/               本地运行数据目录，已被 Git 忽略
+  linknote.example.json    示例配置文件
 ```
 
-## Backend Layout
+## 后端结构
 
 ```text
 backend/app/
-  analysis/        OpenAI-compatible generation and prompt workflow
-  config/          Settings schema, defaults, path normalization
-  downloaders/     Bilibili subtitle/audio/video fetching
-  ingest/          Clipboard and WeChat input collection
-  models/          Dataclasses for media, notes, reports
-  routers/         FastAPI route contracts
-  services/        Business orchestration and persistence
-  transcription/   Audio transcription adapters
+  analysis/        分析提示词与模型调用流程
+  config/          配置结构、默认值与路径处理
+  downloaders/     Bilibili 字幕 / 音频 / 视频获取
+  ingest/          微信、剪贴板等输入采集
+  models/          媒体、笔记、日报等数据结构
+  routers/         FastAPI 路由接口
+  services/        业务编排与持久化
+  transcription/   音频转写适配层
 ```
 
-## Frontend Layout
+## 前端结构
 
 ```text
 frontend/src/
-  api.ts           Backend API client and payload normalization
-  app/             App shell and shared components
-  layouts/         Page layout wrappers
-  pages/           Route-level screens and page-local components
-  types.ts         Frontend API types
+  api.ts           后端 API 调用与返回值标准化
+  app/             应用壳层与跨页面共享组件
+  layouts/         页面布局组件
+  pages/           路由级页面与页面局部组件
+  types.ts         前端共享类型
 ```
 
-## Collaboration Docs
+## 协作文档
 
-- `CONTRIBUTING.md`: branch, PR, and review workflow
-- `docs/CODE_GUIDE.md`: naming, comments, and module-boundary rules
-- `docs/ARCHITECTURE.md`: system overview
-- `docs/LINKNOTE_MIGRATION_PLAN.md`: historical migration notes and early-scope decisions
-- `docs/LINKNOTE_PROJECT_BOOK.md`: longer project book and implementation notes
+- `CONTRIBUTING.md`：分支、PR、评审协作约定
+- `docs/CODE_GUIDE.md`：命名、注释与模块边界约定
+- `docs/ARCHITECTURE.md`：系统架构概览
+- `docs/LINKNOTE_MIGRATION_PLAN.md`：早期迁移背景与范围决策
+- `docs/LINKNOTE_PROJECT_BOOK.md`：更完整的项目说明与实现分析
 
-## Common Commands
+## 常用命令
 
-Install everything and build the frontend:
+安装依赖并构建前端：
 
 ```powershell
 .\scripts\bootstrap.cmd
 ```
 
-Start packaged local app:
+启动打包模式本地应用：
 
 ```powershell
 .\scripts\start-app.cmd
 ```
 
-Start backend and frontend dev servers:
+启动前后端开发模式：
 
 ```powershell
 .\scripts\start-dev.cmd
 ```
 
-Backend only:
+仅启动后端：
 
 ```powershell
 cd backend
 python -m app.run_local
 ```
 
-Frontend only:
+仅启动前端：
 
 ```powershell
 cd frontend
@@ -163,38 +163,41 @@ npm install
 npm run dev
 ```
 
-Build frontend:
+构建前端：
 
 ```powershell
 cd frontend
 npm run build
 ```
 
-## Runtime Data Policy
+## 运行数据约定
 
-Do not commit:
+以下内容不要提交到仓库：
 
 - `workspace/`
 - `linknote.json`
 - `cookies.txt`
-- API keys
-- WeChat databases
-- downloaded audio/video
-- generated notes
-- local browser profiles
+- API Key
+- 微信数据库或聊天导出数据
+- 下载的音频 / 视频
+- 生成后的笔记结果
+- 本地浏览器测试目录
 
-Use `linknote.example.json` and `backend/.env.example` for examples.
+如需共享配置示例，请使用：
 
-## Troubleshooting
+- `linknote.example.json`
+- `backend/.env.example`
 
-- `Frontend dependencies are missing`: run `scripts\bootstrap.cmd`.
-- `Missing backend dependencies`: run `cd backend; python -m pip install -e .`.
-- `No enabled model provider`: enable a provider in Settings.
-- `API Key missing`: configure an API key in Settings or set the configured environment variable.
-- `Bilibili cookies required`: set `cookies.txt` or enable browser-cookie fallback.
-- `WeChat data directory unavailable`: fix the `chatlog` path in Settings.
-- Long videos stay in progress for a while: local audio transcription can be CPU-heavy; the UI shows the current analysis stage.
+## 常见问题
 
-## License
+- `前端依赖缺失`：运行 `.\scripts\bootstrap.cmd`
+- `后端依赖缺失`：运行 `cd backend; python -m pip install -e .`
+- `没有可用模型提供商`：先在设置页启用一个 provider
+- `API Key 缺失`：在设置中填写，或配置对应环境变量
+- `Bilibili cookies required`：设置 `cookies.txt` 或启用浏览器 cookies fallback
+- `微信数据目录不可用`：在设置中修正 `chatlog` 路径
+- `长视频长时间分析中`：本地音频转写可能比较耗 CPU，界面会显示当前阶段
+
+## 许可证
 
 MIT

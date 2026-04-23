@@ -1,57 +1,57 @@
-# Backend Module Map
+# 后端模块说明
 
-Use this file when deciding where a backend change belongs.
+这份文件用于帮助协作者快速判断：一个后端改动应该落在哪个目录。
 
 ## `analysis`
 
-Model-facing logic:
+负责和模型直接相关的逻辑：
 
-- prompt orchestration
-- OpenAI-compatible note generation
-- transcription requests routed through model providers
+- 提示词组织
+- OpenAI Compatible 笔记生成
+- 通过模型接口完成转写
 
 ## `config`
 
-Configuration schema and persistence:
+负责配置结构与配置持久化：
 
-- default runtime config
-- provider normalization
-- path expansion
-- API-key resolution
+- 默认配置
+- provider 规范化
+- 路径展开
+- API Key 解析
 
 ## `downloaders`
 
-Source-specific media acquisition. Keep Bilibili-specific logic here instead of mixing it into note generation.
+负责来源相关的媒体获取逻辑。Bilibili 专有逻辑尽量放在这里，不要散落到笔记生成主流程里。
 
 ## `ingest`
 
-Raw input collection:
+负责原始输入采集：
 
-- clipboard reads
-- WeChat scan/export handling
-- inbox file persistence
+- 读取剪贴板
+- 扫描 / 刷新微信导出数据
+- 写入 inbox 文本文件
 
 ## `models`
 
-Dataclasses shared across services. Keep these small and serializable.
+负责后端共享数据结构。这里的 dataclass 应尽量保持简单、可序列化。
 
 ## `routers`
 
-FastAPI HTTP contracts. Routers should validate input and call services; they should not own business workflows.
+负责 FastAPI 接口层。路由应主要处理输入输出契约，不应承载核心业务编排。
 
 ## `services`
 
-Application workflows:
+负责应用级业务流程，例如：
 
-- daily report building
-- note generation orchestration
-- settings save/load
-- diagnostics
-- vector indexing
-- scheduler
+- 构建日报
+- 编排单条笔记分析
+- 读取 / 保存设置
+- 健康检查
+- 向量索引
+- 调度器
 
-Add short comments when a service uses a fallback path or writes state for the frontend to inspect.
+如果服务里存在兜底路径、兼容逻辑或给前端读状态的写盘行为，建议补一条短注释说明原因。
 
 ## `transcription`
 
-Audio transcription adapters. Keep provider-specific details here so note generation only calls `transcribe_audio`.
+负责音频转写适配层。不同 provider 或本地转写器的差异尽量留在这里，让笔记生成流程统一通过 `transcribe_audio` 调用。

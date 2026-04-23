@@ -1,64 +1,64 @@
-# LinkNote Migration Plan
+# LinkNote 迁移规划说明
 
-This document records which legacy capabilities were selected and adapted into LinkNote for the first usable release.
+这份文档记录 LinkNote 早期版本中，哪些历史能力被保留、替换或放弃，用来帮助协作者理解项目一开始为什么会长成现在这个结构。
 
-## Keep In First Release
+## 首期保留能力
 
-- Bilibili-only note generation flow
-- prompt-builder-driven note format and note style selection
-- transcript-first analysis basis
-- per-note markdown output
-- markmap-based mind map view
-- transcript/reference side panel
-- AI chat panel based on note markdown, transcript, and metadata
-- manual re-analysis that creates appended versions
-- source timestamp jump links
-- settings pages for providers, models, transcriber, and schedule
-- task status progression in the UI
+- 仅面向 Bilibili 的笔记生成流程
+- 基于 prompt-builder 的笔记格式与风格选择
+- 以 transcript 为主的分析依据
+- 单条笔记 Markdown 输出
+- 基于 Markmap 的思维导图视图
+- 转录 / 引用侧边栏
+- 基于笔记、转录、元数据的 AI 问答
+- 支持追加版本的手动重分析
+- 原片时间戳跳转
+- provider、model、转写器、调度等设置页
+- UI 中的任务状态推进
 
-## Replace With LinkNote-Specific Input Flow
+## 替换为 LinkNote 自身输入流
 
-- original single-video URL form
-  replaced by:
-  - WeChat File Transfer Assistant collection
-  - clipboard collection
-  - manual Bilibili paste
+- 旧的单视频 URL 表单
+  替换为：
+  - 微信文件传输助手采集
+  - 剪贴板采集
+  - 手动粘贴 Bilibili 链接
 
-- original task history entrypoint
-  replaced by:
-  - daily report page as the primary entry
-  - note detail page under each daily report item
+- 旧的任务历史入口
+  替换为：
+  - 以日报页作为主入口
+  - 从日报条目进入单条笔记详情页
 
-## Exclude In First Release
+## 首期不纳入范围
 
-- multi-platform downloaders beyond Bilibili
-- screenshot insertion into notes
-- local video upload flow
-- Douyin / Kuaishou / YouTube specific settings and downloader UX
-- export formats beyond Markdown
+- Bilibili 之外的多平台下载器
+- 笔记中的截图插入
+- 本地视频上传流程
+- 抖音 / 快手 / YouTube 专用设置与下载器交互
+- Markdown 之外的导出格式
 
-## Backend Migration Order
+## 后端迁移顺序
 
-1. Introduce a compatible prompt format/style system into the LinkNote analysis layer.
-2. Port Bilibili transcript/download orchestration into a dedicated `sources` and `analysis` split.
-3. Port note markdown generation and source-link post-processing.
-4. Port vector-store and chat tools for note-scoped AI Q&A.
-5. Add daily report persistence and retention around the per-note artifacts.
+1. 先把兼容的 prompt 格式与风格系统接到 LinkNote 分析层
+2. 再把字幕 / 下载编排拆进独立的 `sources` 与 `analysis` 结构
+3. 再接笔记 Markdown 生成与来源链接后处理
+4. 再接向量检索与单笔记 AI 问答工具
+5. 最后在单条笔记产物之外补上日报持久化与保留策略
 
-## Frontend Migration Order
+## 前端迁移顺序
 
-1. Rebuild application shell around daily report as the default page.
-2. Recreate single-note workspace layout:
-   - note content
-   - transcript panel
-   - mind map mode
-   - AI chat side panel
-3. Add stacked re-analysis version blocks under the same note page.
-4. Recreate settings pages using LinkNote wording and simplified scope.
+1. 先以日报页作为应用默认首页重建壳层
+2. 重建单条工作台布局：
+   - 笔记内容
+   - transcript 面板
+   - 思维导图模式
+   - AI Chat 侧边栏
+3. 在同一条笔记页下支持多版本重分析结果
+4. 用 LinkNote 自己的文案和范围重建设置页
 
-## Non-Negotiable Constraints
+## 不可退回的约束
 
-- Do not reintroduce the old knowledge-digest dashboard or report-generation stack.
-- Do not let Bilibili-specific logic leak into generic UI state.
-- Keep the ingest layer isolated from analysis and note rendering.
-- Do not claim a video was understood unless transcript text exists.
+- 不重新引入旧的知识日报大盘与报表生成链路
+- 不让 Bilibili 专有逻辑污染通用 UI 状态
+- 采集层必须和分析 / 笔记渲染层解耦
+- 在没有 transcript 文本的情况下，不得声称已经理解视频内容

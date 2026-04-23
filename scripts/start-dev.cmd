@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-rem Start backend and Vite dev server separately for frontend development.
+rem 以前后端分离模式启动开发环境，便于前端热更新调试。
 
 set "ROOT=%~dp0.."
 

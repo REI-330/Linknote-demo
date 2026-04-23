@@ -1,8 +1,8 @@
 @echo off
 setlocal
 
-rem Start the packaged local app: dependency check, doctor output, stale-process
-rem cleanup, then one backend process that serves the built frontend bundle.
+rem 启动打包模式本地应用：先检查依赖、输出健康诊断、清理旧进程，
+rem 再启动一个负责托管前端构建产物的后端进程。
 
 set "ROOT=%~dp0.."
 set "BACKEND=%ROOT%\backend"

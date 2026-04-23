@@ -3,8 +3,8 @@ import { BrowserRouter, useLocation, useNavigate } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { useRef } from "react";
 
-// Frontend orchestration shell: routing, shared async state, and cross-page
-// actions live here so page components can stay focused on rendering.
+// 前端应用壳层：这里负责路由、共享异步状态和跨页面动作，
+// 让页面组件尽量只关注渲染本身。
 
 import {
   addEnabledModel,

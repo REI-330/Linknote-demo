@@ -1,42 +1,44 @@
-# Frontend Module Map
+# 前端模块说明
 
-Use this file when deciding where a frontend change belongs.
+这份文件用于帮助协作者快速判断：一个前端改动应该放在哪一层。
 
 ## `api.ts`
 
-All backend calls and response normalization live here. If the backend payload changes, update `types.ts` and the normalizer together.
+所有后端接口调用和返回值标准化都放在这里。如果后端 payload 变了，通常要一起更新 `types.ts` 和这里的 normalize 逻辑。
 
 ## `types.ts`
 
-Shared frontend types for API payloads and UI state.
+负责前端共享类型，包括：
+
+- API 返回结构
+- 页面状态对象
+- 公共组件所依赖的数据结构
 
 ## `app`
 
-The application shell and shared components used across pages.
+应用壳层和跨页面共享组件都放在这里，例如：
 
-Examples:
-
-- routing orchestration
-- shared markdown rendering
-- shared chat panel
-- shared provider logo rendering
+- 路由编排
+- 通用 Markdown 渲染
+- 通用聊天面板
+- provider 图标展示
 
 ## `layouts`
 
-Layout wrappers that define page structure but do not own business state.
+页面布局层。这里负责页面结构，不负责具体业务状态。
 
 ## `pages`
 
-Route-level screens and page-local components:
+路由级页面与页面局部组件，例如：
 
-- report page
-- note detail page
-- settings pages
-- page-specific workspace components
+- 日报页
+- 单条笔记详情页
+- 设置页
+- 页面专用工作台组件
 
-## Naming Rules
+## 命名约定
 
-- Route screens use `Page`.
-- Large page-local UI units use `Panel`, `Viewer`, or `Layout`.
-- Prop types use `Props`.
-- Keep user-facing copy in page/components, not in API helpers.
+- 路由级页面使用 `Page`
+- 大型局部 UI 使用 `Panel`、`Viewer` 或 `Layout`
+- 属性类型使用 `Props`
+- 用户可见文案尽量放在页面 / 组件层，不要放进 API 辅助函数

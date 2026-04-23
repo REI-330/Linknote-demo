@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-rem Install backend/frontend dependencies and build the production frontend bundle.
+rem 安装前后端依赖，并构建前端生产包。
 
 set "ROOT=%~dp0.."
 set "BACKEND=%ROOT%\backend"

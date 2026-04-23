@@ -5,9 +5,8 @@ param(
     [switch]$DryRun
 )
 
-# Stop stale LinkNote backend/frontend processes before starting a fresh local
-# session. This avoids the common Windows issue where an old dev server keeps
-# serving outdated code on the same port.
+# 在启动新的本地会话前先清理旧的 LinkNote 前后端进程，
+# 避免 Windows 下旧开发服务器继续占用同一端口并提供过期代码。
 
 $resolvedRoot = (Resolve-Path -LiteralPath $ProjectRoot).Path
 $backendRoot = [System.IO.Path]::Combine($resolvedRoot, "backend")

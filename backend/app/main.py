@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""FastAPI application entrypoint for the packaged local LinkNote app."""
+"""LinkNote 本地打包应用的 FastAPI 入口。"""
 
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -25,8 +25,8 @@ from .services.scheduler import DailyScheduler
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup work is centralized here so local runs and packaged runs share
-    # the same recovery and scheduler behavior.
+    # 启动阶段统一放在这里，确保开发模式和打包模式共享同一套
+    # 恢复逻辑与调度逻辑。
     config = load_app_config()
     sync_autostart(config)
     reconcile_interrupted_running_notes(config)
@@ -54,8 +54,8 @@ def create_app() -> FastAPI:
     app.include_router(models_router, prefix="/api")
     app.include_router(reports_router, prefix="/api")
     app.include_router(settings_router, prefix="/api")
-    # Screenshots are served as static assets because note markdown may embed
-    # generated local image URLs after post-processing.
+    # 截图目录通过静态资源方式暴露，因为 Markdown 后处理后可能会
+    # 直接嵌入本地生成的截图 URL。
     screenshot_dir = screenshot_output_dir(load_app_config().project_root)
     screenshot_dir.mkdir(parents=True, exist_ok=True)
     app.mount("/static/screenshots", StaticFiles(directory=screenshot_dir), name="screenshots")
