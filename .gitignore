@@ -45,3 +45,7 @@ backend/cookies.txt
 Thumbs.db
 .idea/
 .vscode/
+
+# Local runtime logs
+backend/runtime-*.log
+frontend/runtime-*.log

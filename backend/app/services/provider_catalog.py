@@ -217,6 +217,21 @@ def resolve_analysis_target(
     raise RuntimeError("Requested model is not enabled.")
 
 
+def resolve_transcriber_provider(
+    config: AppConfig,
+    *,
+    provider_id: str | None = None,
+) -> ModelProviderConfig:
+    requested_provider_id = (provider_id or config.transcriber.provider_id).strip()
+    if not requested_provider_id:
+        raise RuntimeError("No transcription provider is configured.")
+
+    provider = _find_provider(config, requested_provider_id)
+    if provider is None or not provider.enabled:
+        raise RuntimeError("Requested transcription provider is not enabled.")
+    return provider
+
+
 def reconcile_analysis_target(config: AppConfig) -> None:
     provider_id = config.analysis.provider_id.strip()
     model_name = config.analysis.model_name.strip()

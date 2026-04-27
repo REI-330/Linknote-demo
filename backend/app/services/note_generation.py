@@ -144,6 +144,27 @@ def _classify_analysis_error(message: str) -> dict[str, object]:
             "hint": "Pick an enabled analysis model in Settings. The system no longer auto-falls back to the first model in the list.",
             "actions": ["settings"],
         }
+    if "transcription provider api key is not configured" in lower:
+        return {
+            "code": "config_missing_transcriber_api_key",
+            "title": "Transcription provider API key is missing",
+            "hint": "The current transcription provider has no API key configured. Update the transcriber settings or switch to faster-whisper.",
+            "actions": ["settings", "retry"],
+        }
+    if "no transcription provider is configured" in lower or "requested transcription provider is not enabled" in lower:
+        return {
+            "code": "config_missing_transcriber_provider",
+            "title": "No transcription provider is available",
+            "hint": "Choose an available transcription provider in Settings, or switch the transcriber to faster-whisper.",
+            "actions": ["settings", "retry"],
+        }
+    if "no access to model whisper-1" in lower or ("whisper-1" in lower and "403" in lower):
+        return {
+            "code": "transcriber_model_access_denied",
+            "title": "The current transcription model is unavailable",
+            "hint": "The selected transcription provider does not have access to whisper-1. Switch the transcriber provider or use faster-whisper.",
+            "actions": ["settings", "retry"],
+        }
     if "unable to extract bv id" in lower:
         return {
             "code": "invalid_bilibili_url",
