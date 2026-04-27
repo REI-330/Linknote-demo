@@ -1,10 +1,12 @@
-import { Maximize2, Minimize2, Trash2 } from "lucide-react";
 import { FormEvent, useState } from "react";
-
-import type { NoteChatSource } from "../types";
+import { Maximize2, Minimize2, Send, Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import type { NoteChatSource } from "@/types";
 import { MarkdownArticle } from "./MarkdownArticle";
 
-type ChatMessage = {
+export type ChatMessage = {
   role: "assistant" | "user";
   content: string;
   sources?: NoteChatSource[];
@@ -24,61 +26,61 @@ interface NoteChatPanelProps {
 }
 
 function formatChatTime(seconds?: number) {
-  const safeSeconds = Math.max(0, Math.floor(seconds ?? 0));
-  const minutes = Math.floor(safeSeconds / 60);
-  const remainSeconds = safeSeconds % 60;
-  const hours = Math.floor(minutes / 60);
-  const remainMinutes = minutes % 60;
-  if (hours > 0) {
-    return `${hours}:${String(remainMinutes).padStart(2, "0")}:${String(remainSeconds).padStart(2, "0")}`;
-  }
-  return `${String(remainMinutes).padStart(2, "0")}:${String(remainSeconds).padStart(2, "0")}`;
+  const safe = Math.max(0, Math.floor(seconds ?? 0));
+  const minutes = Math.floor(safe / 60);
+  const remainSeconds = safe % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(remainSeconds).padStart(2, "0")}`;
 }
 
 function buildSourcePreview(text: string) {
   const normalized = text.replace(/\s+/g, " ").trim();
-  if (normalized.length <= 220) {
+  if (normalized.length <= 180) {
     return normalized;
   }
-  return `${normalized.slice(0, 220)}...`;
+  return `${normalized.slice(0, 180)}...`;
 }
 
-interface SourceCardProps {
+function SourceCard({
+  source,
+  expanded,
+  onToggle,
+}: {
   source: NoteChatSource;
-  sourceKey: string;
   expanded: boolean;
-  onToggle: (sourceKey: string) => void;
-}
-
-function SourceCard({ source, sourceKey, expanded, onToggle }: SourceCardProps) {
-  const canExpand = source.text.trim().length > 220;
+  onToggle: () => void;
+}) {
+  const canExpand = source.text.trim().length > 180;
   const showMarkdown = source.source_type === "markdown" && (expanded || !canExpand);
 
   return (
-    <div className="note-chat-source">
-      <div className="note-chat-source-head">
-        <strong>{source.title ?? "来源片段"}</strong>
-        {source.source_type === "transcript" ? (
-          <span className="note-chat-source-time">
-            {formatChatTime(source.start_time)} - {formatChatTime(source.end_time)}
-          </span>
-        ) : null}
+    <div className="rounded-[1rem] border border-border/45 bg-card/70 p-3.5">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <strong className="block truncate text-sm font-semibold text-foreground">
+            {source.title ?? source.section_title ?? "来源片段"}
+          </strong>
+          {source.source_type === "transcript" ? (
+            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              {formatChatTime(source.start_time)} - {formatChatTime(source.end_time)}
+            </span>
+          ) : null}
+        </div>
       </div>
       {showMarkdown ? (
-        <div className="note-chat-source-markdown">
-          <MarkdownArticle markdown={source.text} />
-        </div>
+        <MarkdownArticle markdown={source.text} />
       ) : (
-        <p>{expanded ? source.text : buildSourcePreview(source.text)}</p>
+        <p className="text-sm leading-7 text-muted-foreground">
+          {expanded ? source.text : buildSourcePreview(source.text)}
+        </p>
       )}
-      <div className="note-chat-source-actions">
+      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs font-semibold">
         {canExpand ? (
-          <button type="button" className="link-button" onClick={() => onToggle(sourceKey)}>
+          <button type="button" className="text-primary hover:underline" onClick={onToggle}>
             {expanded ? "收起全文" : "展开全文"}
           </button>
         ) : null}
         {source.jump_url ? (
-          <a className="link-button" href={source.jump_url} target="_blank" rel="noreferrer">
+          <a href={source.jump_url} target="_blank" rel="noreferrer" className="text-primary hover:underline">
             {source.source_type === "transcript" ? "跳到原片" : "打开来源"}
           </a>
         ) : null}
@@ -97,82 +99,106 @@ export function NoteChatPanel({
   onModeChange,
   onClear,
   onChange,
-  onSubmit
+  onSubmit,
 }: NoteChatPanelProps) {
   const [expandedSources, setExpandedSources] = useState<string[]>([]);
 
-  function toggleSource(sourceKey: string) {
+  function toggleSource(key: string) {
     setExpandedSources((current) =>
-      current.includes(sourceKey) ? current.filter((item) => item !== sourceKey) : [...current, sourceKey]
+      current.includes(key) ? current.filter((item) => item !== key) : [...current, key]
     );
   }
 
   return (
-    <div className="note-chat-panel">
-      <div className="note-chat-head">
-        <div className="note-chat-head-title">
-          <strong>AI 问答</strong>
-          <span>基于当前笔记继续追问</span>
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="flex items-center justify-between border-b border-border/45 px-5 py-4">
+        <div>
+          <h3 className="text-base font-semibold text-foreground">AI 追问</h3>
+          <p className="text-xs font-medium text-muted-foreground">围绕当前笔记继续提问</p>
         </div>
-        <div className="note-chat-head-actions">
+        <div className="flex items-center gap-1">
           {onModeChange ? (
             <button
-              className="bn-ghost-button"
               type="button"
+              className="ln-icon-button h-9 w-9"
               onClick={() => onModeChange(mode === "half" ? "full" : "half")}
-              title={mode === "half" ? "切到全屏" : "切到半屏"}
             >
-              {mode === "half" ? <Maximize2 size={16} /> : <Minimize2 size={16} />}
+              {mode === "half" ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
             </button>
           ) : null}
           {onClear && messages.length > 1 ? (
             <button
-              className="bn-ghost-button"
               type="button"
+              className="ln-icon-button h-9 w-9"
               onClick={() => {
                 setExpandedSources([]);
                 onClear();
               }}
-              title="清空问答"
             >
-              <Trash2 size={16} />
+              <Trash2 className="h-4 w-4" />
             </button>
           ) : null}
         </div>
       </div>
-      <div className="note-chat-thread">
-        {messages.map((message, index) => (
-          <div key={`${message.role}-${index}`} className={`note-chat-bubble ${message.role}`}>
-            {message.role === "assistant" ? <MarkdownArticle markdown={message.content} /> : message.content}
-            {message.role === "assistant" && message.sources?.length ? (
-              <div className="note-chat-sources">
-                {message.sources.map((source, sourceIndex) => {
-                  const sourceKey = `${index}-${sourceIndex}`;
-                  return (
-                    <SourceCard
-                      key={`${source.source_type}-${sourceIndex}`}
-                      source={source}
-                      sourceKey={sourceKey}
-                      expanded={expandedSources.includes(sourceKey)}
-                      onToggle={toggleSource}
-                    />
-                  );
-                })}
-              </div>
-            ) : null}
-          </div>
-        ))}
-      </div>
-      <form className="note-chat-form" onSubmit={onSubmit}>
-        {blockReason ? <p className="guard-copy chat-guard-copy">{blockReason}</p> : null}
-        <div className="note-chat-input-row">
-          <input
-            placeholder="针对这条笔记继续追问..."
+
+      <ScrollArea className="flex-1">
+        <div className="space-y-4 px-5 py-5">
+          {messages.map((message, index) => (
+            <article
+              key={`${message.role}-${index}`}
+              className={cn(
+                "rounded-[1.2rem] px-4 py-4",
+                message.role === "assistant"
+                  ? "border border-border/45 bg-card/72"
+                  : "ml-6 bg-primary/10 text-foreground"
+              )}
+            >
+              {message.role === "assistant" ? (
+                <MarkdownArticle markdown={message.content} />
+              ) : (
+                <p className="text-sm font-semibold leading-7">{message.content}</p>
+              )}
+
+              {message.role === "assistant" && message.sources?.length ? (
+                <div className="mt-4 space-y-3">
+                  {message.sources.map((source, sourceIndex) => {
+                    const key = `${index}-${sourceIndex}`;
+                    return (
+                      <SourceCard
+                        key={key}
+                        source={source}
+                        expanded={expandedSources.includes(key)}
+                        onToggle={() => toggleSource(key)}
+                      />
+                    );
+                  })}
+                </div>
+              ) : null}
+            </article>
+          ))}
+        </div>
+      </ScrollArea>
+
+      <form onSubmit={onSubmit} className="border-t border-border/45 p-5">
+        {blockReason ? (
+          <p className="mb-3 text-xs font-semibold text-muted-foreground">{blockReason}</p>
+        ) : null}
+        <div className="flex gap-2">
+          <Input
             value={value}
             onChange={(event) => onChange(event.target.value)}
             disabled={disabled}
+            placeholder="针对这条笔记继续追问..."
+            className="h-11 rounded-2xl border-border/55 bg-card/72"
           />
-          <button disabled={disabled}>{loading ? "回答中..." : "发送"}</button>
+          <button
+            type="submit"
+            disabled={disabled}
+            className="ln-action-button ln-action-button-primary h-11 min-w-[92px]"
+          >
+            <Send className="h-4 w-4" />
+            {loading ? "回答中..." : "发送"}
+          </button>
         </div>
       </form>
     </div>

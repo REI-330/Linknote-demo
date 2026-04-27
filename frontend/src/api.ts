@@ -56,6 +56,51 @@ function asNumber(value: unknown, fallback = 0) {
   return typeof value === "number" && Number.isFinite(value) ? value : fallback;
 }
 
+function normalizeProviderRecord(raw: unknown): ProviderRecord {
+  const record = asRecord(raw);
+  const providerId = asString(record.provider_id) || asString(record.id);
+  const label = asString(record.label) || asString(record.name);
+  return {
+    id: asString(record.id, providerId),
+    provider_id: providerId,
+    name: asString(record.name, label),
+    label,
+    logo: asString(record.logo, "custom"),
+    type: asString(record.type, "custom"),
+    enabled: asBoolean(record.enabled, true),
+    base_url: asString(record.base_url),
+    api_key: asString(record.api_key),
+    api_key_env: asString(record.api_key_env),
+    default_model: asString(record.default_model),
+    models: asArray(record.models)
+      .map((item) => asString(item).trim())
+      .filter(Boolean),
+  };
+}
+
+function normalizeEnabledModelRecord(raw: unknown): EnabledModelRecord {
+  const record = asRecord(raw);
+  const providerId = asString(record.provider_id);
+  const modelName = asString(record.model_name).trim();
+  return {
+    id: asString(record.id, providerId && modelName ? `${providerId}:${modelName}` : ""),
+    provider_id: providerId,
+    model_name: modelName,
+  };
+}
+
+function normalizeRemoteModelRecord(raw: unknown): RemoteModelRecord {
+  const record = asRecord(raw);
+  return {
+    id: asString(record.id),
+    created: asNumber(record.created),
+    object: asString(record.object, "model"),
+    owned_by: asString(record.owned_by),
+    permission: asString(record.permission),
+    root: asString(record.root),
+  };
+}
+
 function normalizeReportItem(raw: unknown) {
   const record = asRecord(raw);
   return {
@@ -382,11 +427,13 @@ export function ingestManual(text: string, sourceName: string): Promise<{ path: 
 }
 
 export function getProviderList(): Promise<ProviderRecord[]> {
-  return fetchJson<ProviderRecord[]>("/get_all_providers");
+  return fetchJson("/get_all_providers").then((raw) =>
+    asArray(raw).map(normalizeProviderRecord).filter((item) => item.provider_id)
+  );
 }
 
 export function getProviderById(providerId: string): Promise<ProviderRecord> {
-  return fetchJson<ProviderRecord>(`/get_provider_by_id/${encodeURIComponent(providerId)}`);
+  return fetchJson(`/get_provider_by_id/${encodeURIComponent(providerId)}`).then(normalizeProviderRecord);
 }
 
 export function addProvider(payload: {
@@ -422,21 +469,38 @@ export function testProviderConnection(providerId: string): Promise<{ status: st
 }
 
 export function fetchProviderModels(providerId: string): Promise<{ models: RemoteModelRecord[] }> {
-  return fetchJson<{ models: RemoteModelRecord[] }>(`/model_list/${encodeURIComponent(providerId)}`);
+  return fetchJson(`/model_list/${encodeURIComponent(providerId)}`).then((raw) => {
+    const record = asRecord(raw);
+    return {
+      models: asArray(record.models)
+        .map(normalizeRemoteModelRecord)
+        .filter((item) => item.id),
+    };
+  });
 }
 
 export function fetchEnabledModels(): Promise<EnabledModelRecord[]> {
-  return fetchJson<EnabledModelRecord[]>("/model_list");
+  return fetchJson("/model_list").then((raw) =>
+    asArray(raw).map(normalizeEnabledModelRecord).filter((item) => item.id && item.provider_id && item.model_name)
+  );
 }
 
 export function fetchEnabledModelsByProvider(providerId: string): Promise<EnabledModelRecord[]> {
-  return fetchJson<EnabledModelRecord[]>(`/model_enable/${encodeURIComponent(providerId)}`);
+  return fetchJson(`/model_enable/${encodeURIComponent(providerId)}`).then((raw) =>
+    asArray(raw).map(normalizeEnabledModelRecord).filter((item) => item.id && item.provider_id && item.model_name)
+  );
 }
 
 export function addEnabledModel(providerId: string, modelName: string): Promise<{ status: string; model: EnabledModelRecord }> {
-  return fetchJson<{ status: string; model: EnabledModelRecord }>("/models", {
+  return fetchJson("/models", {
     method: "POST",
     body: JSON.stringify({ provider_id: providerId, model_name: modelName })
+  }).then((raw) => {
+    const record = asRecord(raw);
+    return {
+      status: asString(record.status, "ok"),
+      model: normalizeEnabledModelRecord(record.model),
+    };
   });
 }
 

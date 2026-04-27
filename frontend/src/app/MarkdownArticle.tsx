@@ -1,13 +1,25 @@
+import * as React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { cn } from "@/lib/utils";
 
 type MarkdownArticleProps = {
   markdown: string;
+  className?: string;
 };
 
-export function MarkdownArticle({ markdown }: MarkdownArticleProps) {
+function stripLeadSourceLink(markdown: string) {
+  return markdown
+    .replace(/^\s*>\s*来源链接[：:]\s*https?:\/\/\S+\s*\n+/u, "")
+    .replace(/^\s*来源链接[：:]\s*https?:\/\/\S+\s*\n+/u, "")
+    .trimStart();
+}
+
+export function MarkdownArticle({ markdown, className }: MarkdownArticleProps) {
+  const displayMarkdown = React.useMemo(() => stripLeadSourceLink(markdown), [markdown]);
+
   return (
-    <div className="markdown-article">
+    <div className={cn("markdown-article", className)}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
@@ -65,25 +77,34 @@ export function MarkdownArticle({ markdown }: MarkdownArticleProps) {
           img: ({ alt, src, ...props }) => (
             <img className="markdown-image" src={src ?? ""} alt={alt ?? ""} loading="lazy" {...props} />
           ),
-          code({ inline, className, children, ...props }) {
+          code({
+            inline,
+            className: codeClassName,
+            children,
+            ...props
+          }: {
+            inline?: boolean;
+            className?: string;
+            children?: React.ReactNode;
+          }) {
             if (inline) {
               return (
-                <code className={className} {...props}>
+                <code className={`ln-code ${codeClassName ?? ""}`.trim()} {...props}>
                   {children}
                 </code>
               );
             }
             return (
               <pre className="markdown-code-block">
-                <code className={className} {...props}>
+                <code className={codeClassName} {...props}>
                   {children}
                 </code>
               </pre>
             );
-          }
+          },
         }}
       >
-        {markdown}
+        {displayMarkdown}
       </ReactMarkdown>
     </div>
   );
